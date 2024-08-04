@@ -1,6 +1,3 @@
-require 'net/http'
-require 'httparty'
-
 class TasksController < ApplicationController
   before_action :authenticate_user
   before_action :set_task, only: %i[show edit update destroy]
@@ -22,7 +19,8 @@ class TasksController < ApplicationController
 
     if @task.save
       notify(@task)
-      redirect_to @task, notice: 'Tarefa criada com sucesso.'
+      trigger_scraping(@task) if @task.pending? && @task.url.present?
+      render json: { task: @task }, status: :created
     else
       render :new
     end
@@ -33,7 +31,8 @@ class TasksController < ApplicationController
   def update
     if @task.update(task_params)
       notify(@task)
-      redirect_to @task, notice: 'Tarefa atualizada com sucesso.'
+      trigger_scraping(@task) if @task.pending? && @task.url.present?
+      render json: { task: @task }, status: :update
     else
       render :edit
     end
@@ -74,6 +73,12 @@ class TasksController < ApplicationController
     HTTParty.post('http://notification_service:3000/notifications',
                   body: { notification: { task_id: task.id, user_id: task.user_id,
                                           details: notification_details } }.to_json,
+                  headers: { 'Content-Type' => 'application/json' })
+  end
+
+  def trigger_scraping(task)
+    HTTParty.post('http://scraping_service:3000/scrape',
+                  body: { task_id: task.id, user_id: task.user_id, url: task.url }.to_json,
                   headers: { 'Content-Type' => 'application/json' })
   end
 end

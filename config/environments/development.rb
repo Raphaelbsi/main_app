@@ -51,6 +51,9 @@ Rails.application.configure do
   config.active_record.verbose_query_logs = true
 
   config.hosts << 'auth_service'
+  config.hosts << 'scraping_service'
+  config.hosts << 'main_app'
+  config.hosts << 'localhost'
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
