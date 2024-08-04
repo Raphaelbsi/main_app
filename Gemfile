@@ -19,6 +19,8 @@ gem 'bcrypt', '~> 3.1.7'
 # A pure ruby implementation of the RFC 7519 OAuth JSON Web Token (JWT) standard.
 gem 'jwt', '~> 2.8', '>= 2.8.2'
 
+# Alias gem for httparty
+gem 'httpparty', '~> 0.2.0'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
